@@ -11,8 +11,17 @@ import org.springframework.beans.factory.annotation.Value;
 @ToString
 public class JwtAuthenticationConfig {
 
-    @Value("${mg.security.jwt.url:/api/login}")
-    private String url;
+    @Value("${mg.security.jwt.authLoginUrl:/login}")
+    private String authLoginUrl;
+
+    @Value("${mg.security.jwt.zuulLoginUrl:/api/login}")
+    private String zuulLoginUrl;
+
+    @Value("${mg.security.jwt.authLoginUrl:/logout}")
+    private String authLogoutUrl;
+
+    @Value("${mg.security.jwt.zuulLoginUrl:/api/logout}")
+    private String zuulLogoutUrl;
 
     @Value("${mg.security.jwt.header:Authorization}")
     private String header;
@@ -20,10 +29,9 @@ public class JwtAuthenticationConfig {
     @Value("${mg.security.jwt.prefix:Bearer}")
     private String prefix;
 
-    //@Value("${mg.security.jwt.expiration:#{24*60*60}}")
-    @Value("${mg.security.jwt.expiration:#{60}}")
-    private int expiration; // default 1 minute
+    @Value("${mg.security.jwt.expiration:#{30*60}}")
+    private int expiration; // default 30 minutes
 
-    @Value("${mg.security.jwt.secret}")
+    @Value("${mg.security.jwt.secret:secretkey}")
     private String secret;
 }

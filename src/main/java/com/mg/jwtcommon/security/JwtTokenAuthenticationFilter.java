@@ -2,6 +2,9 @@ package com.mg.jwtcommon.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,10 +20,12 @@ import java.util.stream.Collectors;
 
 public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 
+    private RedisUtil redisUtil;
     private final JwtAuthenticationConfig config;
 
     public JwtTokenAuthenticationFilter(JwtAuthenticationConfig config) {
         this.config = config;
+        this.redisUtil = new RedisUtil();
     }
 
     @Override
@@ -42,7 +47,11 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
                             authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 }
-            } catch (Exception ignore) {
+                redisUtil.isForbiddenToken(token);
+
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+                logger.error(ex.getMessage());
                 SecurityContextHolder.clearContext();
             }
         }
